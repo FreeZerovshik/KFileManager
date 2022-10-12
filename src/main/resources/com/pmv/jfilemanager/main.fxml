@@ -12,7 +12,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TextField?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+<VBox alignment="CENTER"  xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.pmv.jfilemanager.Controller">
     <MenuBar>
         <Menu text="File">
@@ -21,12 +21,10 @@
             <MenuItem text="Exit" onAction="#onExitAction"/>
         </Menu>
     </MenuBar>
-    <HBox>
-        <ComboBox/>
-        <TextField HBox.hgrow="ALWAYS" editable="false"/>
-        <Button text="Up" />
+    <HBox VBox.vgrow="ALWAYS">
+        <fx:include fx:id="leftPanel" source="panel.fxml" HBox.hgrow="ALWAYS"/>
+        <fx:include fx:id="rightPanel" source="panel.fxml" HBox.hgrow="ALWAYS"/>
     </HBox>
-    <TableView fx:id="filesTable"  VBox.vgrow="ALWAYS"/>
     <HBox spacing="5" >
         <Button text="Open" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
         <Button text="Copy" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>

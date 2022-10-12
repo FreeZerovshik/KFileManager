@@ -8,8 +8,8 @@ import javafx.stage.Stage
 class MainApplication : Application() {
     override fun start(stage: Stage) {
         val fxmlLoader = FXMLLoader(MainApplication::class.java.getResource("main.fxml"))
-        val scene = Scene(fxmlLoader.load(), 800.0, 600.0)
-        stage.title = "JFileManager!"
+        val scene = Scene(fxmlLoader.load(), 1024.0, 768.0)
+        stage.title = "FileManager"
         stage.scene = scene
         stage.show()
     }
