@@ -15,9 +15,9 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.pmv.jfilemanager.PanelController">
     <HBox>
-        <ComboBox/>
-        <TextField HBox.hgrow="ALWAYS" editable="false"/>
-        <Button text="Up" />
+        <ComboBox fx:id="disksBox" onAction="#onSelectDisk"/>
+        <TextField fx:id="pathField" HBox.hgrow="ALWAYS" editable="false"/>
+        <Button text="Up" onAction="#onPathUpClick" />
     </HBox>
     <TableView fx:id="filesTable"  VBox.vgrow="ALWAYS"/>
 </VBox>
