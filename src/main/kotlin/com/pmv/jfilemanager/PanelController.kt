@@ -74,11 +74,14 @@ class PanelController: Initializable {
         // двойной клик и переход если это каталог
         filesTable.setOnMouseClicked() { mouseEvent ->
             if (mouseEvent.clickCount == 2) {
-               val path = filesTable.selectionModel.let { Paths.get(pathField.text).resolve(it.selectedItem.filename) }
+                if (!filesTable.selectionModel.isEmpty) {
+                    val path =
+                        filesTable.selectionModel.let { Paths.get(pathField.text).resolve(it.selectedItem.filename) }
 
-               if (Files.isDirectory(path)) {
-                   updateList(path)
-               }
+                    if (Files.isDirectory(path)) {
+                        updateList(path)
+                    }
+                }
            }
         }
 
@@ -86,7 +89,7 @@ class PanelController: Initializable {
         updateList(Paths.get("."))
     }
 
-    private fun updateList(path: Path) {
+     fun updateList(path: Path) {
         pathField.text = path.normalize().toAbsolutePath().toString()
 
         filesTable.items.clear()
@@ -113,4 +116,14 @@ class PanelController: Initializable {
         val element = actionEvent.source as ComboBox<String>
         updateList(Paths.get(element.selectionModel.selectedItem))
     }
+
+    fun getSelectedFilename() =
+        if (!filesTable.isFocused) {
+            null
+        }else {
+            filesTable.selectionModel.selectedItem.filename
+        }
+
+
+    fun getCurrentPath() =  pathField.text
 }
