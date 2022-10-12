@@ -28,8 +28,8 @@
     <HBox spacing="5" >
         <Button focusTraversable="false" text="Open" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
         <Button focusTraversable="false" text="Copy" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#onCopyFile"/>
-        <Button focusTraversable="false" text="Move" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-        <Button focusTraversable="false" text="Delete" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+        <Button focusTraversable="false" text="Move" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#onMoveFile"/>
+        <Button focusTraversable="false" text="Delete" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#onDeleteFile"/>
         <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
         </padding>
