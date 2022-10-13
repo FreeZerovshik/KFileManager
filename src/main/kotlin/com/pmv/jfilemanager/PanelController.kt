@@ -10,6 +10,8 @@ import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.TextField
+import java.awt.Desktop
+import java.io.File
 import java.net.URL
 import java.nio.file.*
 import java.time.format.DateTimeFormatter
@@ -71,15 +73,18 @@ class PanelController: Initializable {
         }
         disksBox.selectionModel.select(0)
 
-        // двойной клик и переход если это каталог
+        // двойной клик
         filesTable.setOnMouseClicked() { mouseEvent ->
             if (mouseEvent.clickCount == 2) {
                 if (!filesTable.selectionModel.isEmpty) {
                     val path =
                         filesTable.selectionModel.let { Paths.get(pathField.text).resolve(it.selectedItem.filename) }
 
-                    if (Files.isDirectory(path)) {
+                    if (Files.isDirectory(path)) { // переход если это каталог
                         updateList(path)
+                    } else { // если файл  то открываем
+                        val file = File(path.toString())
+                        val dt = Desktop.getDesktop().open(file)
                     }
                 }
            }

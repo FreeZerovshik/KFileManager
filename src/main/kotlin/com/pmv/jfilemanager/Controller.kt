@@ -3,12 +3,13 @@ package com.pmv.jfilemanager
 import javafx.application.Platform
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
-import javafx.scene.control.*
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonType
 import javafx.scene.layout.VBox
+import java.awt.Desktop
+import java.io.File
 import java.io.IOException
-import java.nio.file.CopyOption
 import java.nio.file.FileAlreadyExistsException
-import java.nio.file.FileSystemException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
@@ -17,7 +18,7 @@ import java.nio.file.StandardCopyOption
 class Controller {
 
     @FXML
-    lateinit var leftPanel : VBox
+    lateinit var leftPanel: VBox
 
     @FXML
     lateinit var rightPanel: VBox
@@ -38,7 +39,12 @@ class Controller {
             src?.dstPC?.updateList(Paths.get(src.dstPC!!.getCurrentPath()))
 
         } catch (e: FileAlreadyExistsException) {
-            var alert = Alert(Alert.AlertType.ERROR, "Файл ${e.message} уже сущетвует, перезапиcать?", ButtonType.YES, ButtonType.NO)
+            var alert = Alert(
+                Alert.AlertType.ERROR,
+                "Файл ${e.message} уже сущетвует, перезапиcать?",
+                ButtonType.YES,
+                ButtonType.NO
+            )
             alert.showAndWait()
 
             if (alert.result == ButtonType.YES) {
@@ -56,8 +62,7 @@ class Controller {
 
     }
 
-    private fun getSources(): Source?
-    {
+    private fun getSources(): Source? {
         val src = Source()
 
         src.leftPC = leftPanel.properties["ctrl"] as PanelController?
@@ -96,10 +101,15 @@ class Controller {
                 src.dstPC?.updateList(Paths.get(src.dstPC!!.getCurrentPath()))
                 src.srcPC?.updateList(Paths.get(src.srcPC!!.getCurrentPath()))
 
-           }
+            }
 
         } catch (e: FileAlreadyExistsException) {
-            var alert = Alert(Alert.AlertType.ERROR, "Файл ${e.message} уже сущетвует, перезапиcать?", ButtonType.YES, ButtonType.NO)
+            var alert = Alert(
+                Alert.AlertType.ERROR,
+                "Файл ${e.message} уже сущетвует, перезапиcать?",
+                ButtonType.YES,
+                ButtonType.NO
+            )
             alert.showAndWait()
 
             if (alert.result == ButtonType.YES) {
@@ -121,17 +131,49 @@ class Controller {
         val src = getSources()
 
         try {
-            if (src?.srcPath != null ) {
+            if (src?.srcPath != null) {
 
-                val alert = Alert(Alert.AlertType.CONFIRMATION, "Вы уверены что хотите удалить файл?", ButtonType.YES, ButtonType.NO)
+                val alert = Alert(
+                    Alert.AlertType.CONFIRMATION,
+                    "Вы уверены что хотите удалить файл?",
+                    ButtonType.YES,
+                    ButtonType.NO
+                )
                 alert.showAndWait()
 
-                if (alert.result == ButtonType.YES)  Files.delete(src.srcPath!!)
+                if (alert.result == ButtonType.YES) Files.delete(src.srcPath!!)
             }
             src?.srcPC?.updateList(Paths.get(src.srcPC!!.getCurrentPath()))
 
         } catch (e: IOException) {
-            val alert = Alert(Alert.AlertType.ERROR, "Ошибка уадления файла ${e.message} ", ButtonType.OK)
+            val alert = Alert(Alert.AlertType.ERROR, "Ошибка удаления файла ${e.message} ", ButtonType.OK)
+            alert.showAndWait()
+        }
+
+    }
+
+    fun onOpenFile(actionEvent: ActionEvent) {
+        val src = getSources()
+
+        try {
+            if (src?.srcPath != null) {
+                val ft = src.srcPC?.filesTable
+
+
+                if (!ft?.selectionModel?.isEmpty!!) {
+                    val path = ft.selectionModel.let {
+                        Paths.get(src.srcPC?.pathField?.text!!).resolve(it.selectedItem.filename)
+                    }
+
+                    if (!Files.isDirectory(path)) {
+                        val file = File(path.toString())
+                        val dt = Desktop.getDesktop().open(file)
+                    }
+                }
+
+            }
+        } catch (e: IOException) {
+            val alert = Alert(Alert.AlertType.ERROR, "Ошибка открытия файла ${e.message} ", ButtonType.OK)
             alert.showAndWait()
         }
 

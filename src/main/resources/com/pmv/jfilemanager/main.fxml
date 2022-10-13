@@ -26,7 +26,7 @@
         <fx:include fx:id="rightPanel" source="panel.fxml" HBox.hgrow="ALWAYS"/>
     </HBox>
     <HBox spacing="5" >
-        <Button focusTraversable="false" text="Open" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+        <Button focusTraversable="false" text="Open" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#onOpenFile"/>
         <Button focusTraversable="false" text="Copy" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#onCopyFile"/>
         <Button focusTraversable="false" text="Move" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#onMoveFile"/>
         <Button focusTraversable="false" text="Delete" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#onDeleteFile"/>
