@@ -27,47 +27,25 @@ class Controller {
         Platform.exit()
     }
 
+
     fun onCopyFile(actionEvent: ActionEvent) {
-        val leftPC = leftPanel.properties["ctrl"] as PanelController?
-        val rightPC = rightPanel.properties["ctrl"] as PanelController?
-
-        if (leftPC?.getSelectedFilename() == null && rightPC?.getSelectedFilename() == null) {
-            val alert: Alert = Alert(Alert.AlertType.ERROR, "Файл не выбран!", ButtonType.OK)
-            alert.showAndWait()
-            return
-        }
-
-        var srcPC: PanelController? = null
-        var dstPC: PanelController? = null
-
-        if (leftPC?.getSelectedFilename() != null) {
-            srcPC = leftPC
-            dstPC = rightPC
-        }
-
-        if (rightPC?.getSelectedFilename() != null) {
-            srcPC = rightPC
-            dstPC = leftPC
-        }
-
-        val srcPath = srcPC?.getCurrentPath()?.let { Paths.get(it, srcPC.getSelectedFilename()) }
-        val dstPath = dstPC?.getCurrentPath()?.let { Paths.get(it).resolve(srcPath?.fileName.toString()) }
+        val src = getSources()
 
         try {
-            if (srcPath != null && dstPath != null) {
-                Files.copy(srcPath, dstPath)
+            if (src?.srcPath != null && src.dstPath != null) {
+                Files.copy(src.srcPath!!, src.dstPath!!)
             }
-            dstPC?.updateList(Paths.get(dstPC.getCurrentPath()))
+            src?.dstPC?.updateList(Paths.get(src.dstPC!!.getCurrentPath()))
 
         } catch (e: FileAlreadyExistsException) {
-            var alert = Alert(Alert.AlertType.ERROR, "Файл ${e.message} уже сущетвует, перезапиать", ButtonType.YES, ButtonType.NO)
+            var alert = Alert(Alert.AlertType.ERROR, "Файл ${e.message} уже сущетвует, перезапиcать?", ButtonType.YES, ButtonType.NO)
             alert.showAndWait()
 
             if (alert.result == ButtonType.YES) {
 
                 try {
-                    Files.copy(srcPath, dstPath, StandardCopyOption.REPLACE_EXISTING)
-                    dstPC?.updateList(Paths.get(dstPC.getCurrentPath()))
+                    Files.copy(src?.srcPath!!, src.dstPath!!, StandardCopyOption.REPLACE_EXISTING)
+                    src.dstPC?.updateList(Paths.get(src.dstPC!!.getCurrentPath()))
                 } catch (e: IOException) {
                     alert = Alert(Alert.AlertType.ERROR, "Ошибка копирования файла", ButtonType.OK)
                     alert.showAndWait()
@@ -78,49 +56,58 @@ class Controller {
 
     }
 
-    fun onMoveFile(actionEvent: ActionEvent) {
-        val leftPC = leftPanel.properties["ctrl"] as PanelController?
-        val rightPC = rightPanel.properties["ctrl"] as PanelController?
+    private fun getSources(): Source?
+    {
+        val src = Source()
 
-        if (leftPC?.getSelectedFilename() == null && rightPC?.getSelectedFilename() == null) {
+        src.leftPC = leftPanel.properties["ctrl"] as PanelController?
+        src.rightPC = rightPanel.properties["ctrl"] as PanelController?
+
+        if (src.leftPC?.getSelectedFilename() == null && src.rightPC?.getSelectedFilename() == null) {
             val alert: Alert = Alert(Alert.AlertType.ERROR, "Файл не выбран!", ButtonType.OK)
             alert.showAndWait()
-            return
+            return null
         }
 
-        var srcPC: PanelController? = null
-        var dstPC: PanelController? = null
-
-        if (leftPC?.getSelectedFilename() != null) {
-            srcPC = leftPC
-            dstPC = rightPC
+        if (src.leftPC?.getSelectedFilename() != null) {
+            src.srcPC = src.leftPC
+            src.dstPC = src.rightPC
         }
 
-        if (rightPC?.getSelectedFilename() != null) {
-            srcPC = rightPC
-            dstPC = leftPC
+        if (src.rightPC?.getSelectedFilename() != null) {
+            src.srcPC = src.rightPC
+            src.dstPC = src.leftPC
         }
 
-        val srcPath = srcPC?.getCurrentPath()?.let { Paths.get(it, srcPC.getSelectedFilename()) }
-        val dstPath = dstPC?.getCurrentPath()?.let { Paths.get(it).resolve(srcPath?.fileName.toString()) }
+        src.srcPath = src.srcPC?.getCurrentPath()?.let { Paths.get(it, src.srcPC!!.getSelectedFilename()) }
+        src.dstPath = src.dstPC?.getCurrentPath()?.let { Paths.get(it).resolve(src.srcPath?.fileName.toString()) }
+
+        return src
+    }
+
+    fun onMoveFile(actionEvent: ActionEvent) {
+
+        val src = getSources()
 
         try {
-            if (srcPath != null && dstPath != null) {
-                Files.move(srcPath, dstPath)
-            }
-            dstPC?.updateList(Paths.get(dstPC.getCurrentPath()))
-            srcPC?.updateList(Paths.get(srcPC.getCurrentPath()))
+            if (src?.srcPath != null && src.dstPath != null) {
+                Files.move(src.srcPath!!, src.dstPath!!)
+
+                src.dstPC?.updateList(Paths.get(src.dstPC!!.getCurrentPath()))
+                src.srcPC?.updateList(Paths.get(src.srcPC!!.getCurrentPath()))
+
+           }
 
         } catch (e: FileAlreadyExistsException) {
-            var alert = Alert(Alert.AlertType.ERROR, "Файл ${e.message} уже сущетвует, перезапиать", ButtonType.YES, ButtonType.NO)
+            var alert = Alert(Alert.AlertType.ERROR, "Файл ${e.message} уже сущетвует, перезапиcать?", ButtonType.YES, ButtonType.NO)
             alert.showAndWait()
 
             if (alert.result == ButtonType.YES) {
 
                 try {
-                    Files.move(srcPath, dstPath, StandardCopyOption.REPLACE_EXISTING)
-                    dstPC?.updateList(Paths.get(dstPC.getCurrentPath()))
-                    srcPC?.updateList(Paths.get(srcPC.getCurrentPath()))
+                    Files.move(src?.srcPath!!, src.dstPath!!, StandardCopyOption.REPLACE_EXISTING)
+                    src.dstPC?.updateList(Paths.get(src.dstPC!!.getCurrentPath()))
+                    src.srcPC?.updateList(Paths.get(src.srcPC!!.getCurrentPath()))
                 } catch (e: IOException) {
                     alert = Alert(Alert.AlertType.ERROR, "Ошибка перемещения файла", ButtonType.OK)
                     alert.showAndWait()
@@ -131,36 +118,17 @@ class Controller {
     }
 
     fun onDeleteFile(actionEvent: ActionEvent) {
-        val leftPC = leftPanel.properties["ctrl"] as PanelController?
-        val rightPC = rightPanel.properties["ctrl"] as PanelController?
-
-        if (leftPC?.getSelectedFilename() == null && rightPC?.getSelectedFilename() == null) {
-            val alert: Alert = Alert(Alert.AlertType.ERROR, "Файл не выбран!", ButtonType.OK)
-            alert.showAndWait()
-            return
-        }
-
-        var srcPC: PanelController? = null
-
-        if (leftPC?.getSelectedFilename() != null) {
-            srcPC = leftPC
-        }
-
-        if (rightPC?.getSelectedFilename() != null) {
-            srcPC = rightPC
-        }
-
-        val srcPath = srcPC?.getCurrentPath()?.let { Paths.get(it, srcPC.getSelectedFilename()) }
+        val src = getSources()
 
         try {
-            if (srcPath != null ) {
+            if (src?.srcPath != null ) {
 
                 val alert = Alert(Alert.AlertType.CONFIRMATION, "Вы уверены что хотите удалить файл?", ButtonType.YES, ButtonType.NO)
                 alert.showAndWait()
 
-                if (alert.result == ButtonType.YES)  Files.delete(srcPath)
+                if (alert.result == ButtonType.YES)  Files.delete(src.srcPath!!)
             }
-            srcPC?.updateList(Paths.get(srcPC.getCurrentPath()))
+            src?.srcPC?.updateList(Paths.get(src.srcPC!!.getCurrentPath()))
 
         } catch (e: IOException) {
             val alert = Alert(Alert.AlertType.ERROR, "Ошибка уадления файла ${e.message} ", ButtonType.OK)
