@@ -5,11 +5,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
-import javafx.scene.control.ComboBox
-import javafx.scene.control.TableCell
-import javafx.scene.control.TableColumn
-import javafx.scene.control.TableView
-import javafx.scene.control.TextField
+import javafx.scene.control.*
 import java.awt.Desktop
 import java.io.File
 import java.net.URL
@@ -65,6 +61,7 @@ class PanelController: Initializable {
 
         filesTable.columns.addAll(fileTypeColumn, fileNameColumn, fileSizeColumn, fileDateColumn)
         filesTable.sortOrder.add(fileTypeColumn)
+        filesTable.selectionModel.selectionMode = SelectionMode.MULTIPLE
 
         // add disk to ComboBox
         disksBox.items.clear()
@@ -122,12 +119,9 @@ class PanelController: Initializable {
         updateList(Paths.get(element.selectionModel.selectedItem))
     }
 
-    fun getSelectedFilename() =
-        if (!filesTable.isFocused) {
-            null
-        }else {
-            filesTable.selectionModel.selectedItem.filename
-        }
+    fun getSelectedFilename() = if (!filesTable.isFocused) null else filesTable.selectionModel.selectedItem.filename
+
+    fun getSelectedFiles() = if (!filesTable.isFocused) null else filesTable.selectionModel.selectedItems
 
 
     fun getCurrentPath() =  pathField.text
